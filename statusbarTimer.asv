@@ -1,0 +1,15 @@
+function statusbarTimer(prefix)
+
+if ~exist('prefix','var')
+    prefix = 'Busy... ';
+end
+
+mytimer = timer('TimerFcn',@timerfcn,'ExecutionMode','singleShot');
+start(mytimer)
+
+    function timerfcn(t,~)
+        
+    end
+
+end
+

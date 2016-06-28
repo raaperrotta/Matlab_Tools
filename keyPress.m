@@ -6,7 +6,7 @@ function keyPress(key)
 %   executed in order. Keys seperated by plus signs are executed as
 %   combinations. Key names are not case sensitive.
 %   
-%   For example, most Windows 7 users can call KEYPRESS('Windows+Up') to
+%   For example, most Windows 7+ users can call KEYPRESS('Windows+Up') to
 %   maximize the current window. To virtually type "Hello" in the MATLAB
 %   Command Window, call KEYPRESS('shift+h,e,l,l,o').
 % 
@@ -15,8 +15,6 @@ function keyPress(key)
 % 
 % Created By:
 %   Robert Perrotta
-% Last Revised:
-%   2014 04 24
 
 groups = regexp(upper(key),',','split');
 keys = cellfun(@(thisgroup)regexp(thisgroup,'+','split'),groups,'UniformOutput',false);

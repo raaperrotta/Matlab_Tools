@@ -26,8 +26,6 @@ function offsetTicks(hAxle,~,format,trimZeros)
 % 
 % Created by:
 %   Robert Perrotta
-% Last revised:
-%   2015-06-26
 
 if nargin < 4
     trimZeros = true;
@@ -53,14 +51,22 @@ else
 end
 
 % Get the current tick values and prepare a cell array for our new labels
-ticks = get(hAxle,'Tick');
+if verLessThan('matlab','9') % What about R2015b??
+    ticks = get(hAxle,'Tick');
+else
+    ticks = get(hAxle,'TickValues');
+end
 if isempty(ticks) % no ticks on which to operate
     return
 end
 if any(ticks>=0) && any(ticks<=0) % axis range includes 0
     % Should revert to normal tick labels
     % For now, do the normal process
-    label = arrayfun(@(x)num2str(x,format{:}),ticks,'UniformOutput',false);
+    if ~isempty(which('num2sepstr'))
+        label = arrayfun(@(x)num2sepstr(x,format{:}),ticks,'UniformOutput',false);
+    else
+        label = arrayfun(@(x)num2str(x,format{:}),ticks,'UniformOutput',false);
+    end
     set(hAxle,'TickLabel',label)
     return
 end

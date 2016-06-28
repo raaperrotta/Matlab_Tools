@@ -54,19 +54,20 @@ function statusbarHandles = statusbar(varargin)
 %
 %   Examples customizing the status-bar appearance:
 %      sb = statusbar('text');
-%      set(sb.CornerGrip, 'visible','off');
-%      set(sb.TextPanel, 'Foreground',[1,0,0], 'Background','cyan', 'ToolTipText','tool tip...')
+%      set(sb.CornerGrip, 'visible',false);
+%      set(sb.TextPanel, 'Foreground',java.awt.Color(1,0,0), 'Background',java.awt.Color.cyan, 'ToolTipText','tool tip...')
 %      set(sb, 'Background',java.awt.Color.cyan);
 %
 %      % sb.ProgressBar is by default invisible, determinite, non-continuous fill, min=0, max=100, initial value=0
-%      set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',500, 'Value',234);
-%      set(sb.ProgressBar, 'Visible','on', 'Indeterminate','off'); % indeterminate (annimated)
-%      set(sb.ProgressBar, 'Visible','on', 'StringPainted','on');  % continuous fill
-%      set(sb.ProgressBar, 'Visible','on', 'StringPainted','on', 'string',''); % continuous fill, no percentage text
+%      set(sb.ProgressBar, 'Visible',true, 'Minimum',0, 'Maximum',500, 'Value',234);
+%      set(sb.ProgressBar, 'Visible',true, 'Indeterminate',false); % indeterminate (annimated)
+%      set(sb.ProgressBar, 'Visible',true, 'StringPainted',true);  % continuous fill
+%      set(sb.ProgressBar, 'Visible',true, 'StringPainted',true, 'string',''); % continuous fill, no percentage text
 %
 %      % Adding a checkbox
 %      jCheckBox = javax.swing.JCheckBox('cb label');
 %      sb.add(jCheckBox,'West');  % Beware: East also works but doesn't resize automatically
+%      sb.revalidate;  % update the display to show the new checkbox
 %
 %   Technical description:
 %      http://UndocumentedMatlab.com/blog/setting-status-bar-text
@@ -88,6 +89,8 @@ function statusbarHandles = statusbar(varargin)
 %     2007-04-29: Added internal ProgressBar; clarified main comment
 %     2007-05-04: Added partial support for Matlab 6
 %     2011-10-14: Fix for R2011b
+%     2014-10-13: Fix for R2014b
+%     2015-03-22: Updated usage examples (no changes to the code)
 %
 %   See also:
 %     ishghandle, sprintf, findjobj (on the <a href="http://www.mathworks.com/matlabcentral/fileexchange/loadFile.do?objectId=14317">file exchange</a>)
@@ -96,7 +99,7 @@ function statusbarHandles = statusbar(varargin)
 % referenced and attributed as such. The original author maintains the right to be solely associated with this work.
 
 % Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
-% $Revision: 1.5 $  $Date: 2011/10/14 04:10:04 $
+% $Revision: 1.7 $  $Date: 2015/03/22 11:52:24 $
 
     % Check for available Java/AWT (not sure if Swing is really needed so let's just check AWT)
     if ~usejava('awt')
@@ -129,7 +132,7 @@ function statusbarHandles = statusbar(varargin)
 
     % Loop over all unique root handles (figures/desktop) of the supplied handles
     rootHandles = [];
-    if any(handles)  % non-0, i.e. non-desktop
+    if any(double(handles))  % non-0, i.e. non-desktop
         try
             rootHandles = ancestor(handles,'figure');
             if iscell(rootHandles),  rootHandles = cell2mat(rootHandles);  end
@@ -144,7 +147,7 @@ function statusbarHandles = statusbar(varargin)
         end
     end
     rootHandles = unique(rootHandles);
-    if any(handles==0), rootHandles(end+1)=0; end
+    if any(double(handles)==0), rootHandles(end+1)=0; end
     statusbarObjs = handle([]);
     for rootIdx = 1 : length(rootHandles)
         if rootHandles(rootIdx) == 0
